@@ -1,4 +1,4 @@
-set root=C:\Users\813146\AppData\Local\Continuum\anaconda3
+set root=C:\Users\AppData\Local\Continuum\anaconda3
 
 call %root%/Scripts/activate.bat %root%
 

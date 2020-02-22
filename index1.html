@@ -3,7 +3,7 @@
 <!--From https://codepen.io/frytyler/pen/EGdtg-->
 <head>
   <meta charset="UTF-8">
-  <title>DJO Claim Denial Prediction</title>
+  <title>Denial Prediction</title>
   <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
@@ -36,8 +36,8 @@
 <body>
 
  <div class="login">
-	<h1>CLAIM DENIAL PREDICTION</h1>
-	<p>Upload Billed Report</p>
+	<h1> DENIAL PREDICTION</h1>
+	<p>Upload  Report</p>
 		<form method="post" enctype="multipart/form-data">
 		  <input type="file" name="file" />
 		  <input type="submit" value="Upload" />
@@ -46,7 +46,7 @@
 	
      <!-- Main Input For Receiving Query to our ML -->
     <form action="{{ url_for('predict')}}"method="post">
-		<p>Percentage of claims to be reviewed<input type = "number" name = "Percentage of claims to be reviewed" /></p>
+		<p>Percentage of claims to be reviewed<input type = "number" name = "Percentage to be reviewed" /></p>
 		<button type="submit" class="btn btn-primary btn-block btn-large"  onclick="predictButtonClick()">Predict</button>
     </form>
 

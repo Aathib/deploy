@@ -3,14 +3,14 @@ import pickle, os
 import pandas as pd
 from werkzeug.utils import secure_filename
 import sys, time
-sys.path.append(r'C:\Users\813146\Documents\Full_data')
+sys.path.append(r'C:\\Documents\Full_data')
 
 from preprocess import preprocs
 
 app = Flask(__name__)
 model = pickle.load(open('model.pkl', 'rb'))
 
-UPLOAD_FOLDER = r'C:/Users/813146/Documents/Full_data/Upload'
+UPLOAD_FOLDER = r'C:/Documents/Full_data/Upload'
 ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -51,7 +51,6 @@ def upload_file():
     return render_template('index1.html')
 
 
-
 @app.route('/predict',methods=['POST', 'GET'])
 def predict(filename = None):
     '''
@@ -60,35 +59,34 @@ def predict(filename = None):
     start = time.process_time()
     data = pd.read_csv(os.path.join(UPLOAD_FOLDER, fileNameSample.name), engine = 'python')
     
-    data = data[pd.notnull(data['HCPC Code'])]
-    data = data[pd.notnull(data['Patient DOB'])]
-    data = data[data['SO Dollars'] >= 0]
-    data.drop(['Hold Code','Hold Description','Hold Detail(s)','Hold Responsibility','Hold Owner'],axis=1, inplace = True)
+    data = data[pd.notnull(data['Heal Code'])]
+    data = data[pd.notnull(data['Pat DOB'])]
+    data = data[data['Dollars'] >= 0]
     data.drop_duplicates(inplace = True)
     data.reset_index(drop= True, inplace = True)
         
-    percent = request.form.get('Percentage of claims to be reviewed')
+    percent = request.form.get('Percentage to be reviewed')
     percent = int(percent)/100
     data1 = preprocs(data)   # Preprocess the data
-    final_features = data1.drop(['Insurance ID', 'Dr. ID','Patient_SO_ID','HCPC_dummy','Modifier_dummy'], axis =1)
+    final_features = data1.drop(['Ins ID', 'Dr. ID'], axis =1)
     pred_prob = model.predict_proba(final_features)
-    data2 = data1[['Patient_SO_ID','HCPC_dummy', 'Modifier_dummy']]
+    data2 = data1[['Pat_SO_ID']]
     
 
     ##for severity
-    data['Patient_SO_ID'] = ''
-    data['Patient_SO_ID'] = data['Patient ID'] + "-" + data['SO ID']
+    data['Pat_SO_ID'] = ''
+    data['Pat_SO_ID'] = data['Patient ID'] + "-" + data['SO ID']
     data  = data.merge(data2.drop_duplicates(subset=['Patient_SO_ID']),how = 'left')
                 
-    insur_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'Insurance Name')
+    insur_feat = pd.read_excel(r'C:\\Feature_rank.xlsx', sheet_name = 'Insurance Name')
     insur_feat['Insurance Name'] = insur_feat['Insurance Name'].str.upper()
-    dxcode_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'DX code')
-    clinic_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'Clinic ID')
-    claim_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'Claim Type')
-    patstat_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'Patient State')
-    mod_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'Modifier')
-    hcpc_feat = pd.read_excel(r'C:\Users\813146\Documents\Full_data\data\Feature_rank.xlsx', sheet_name = 'HCPC code')
-    hcpc_feat.to_csv('hcpc.csv')
+    dxcode_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'DX code')
+    clinic_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'Clinic ID')
+    claim_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'Claim Type')
+    patstat_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'Patient State')
+    mod_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'Modifier')
+    hcpc_feat = pd.read_excel(r'C:Feature_rank.xlsx', sheet_name = 'HCPC code')
+    
     
     data['Insurance Name'] = data['Insurance Name'].str.upper() 
     data = data.merge(insur_feat.drop_duplicates(subset=['Insurance Name']), how='left')
@@ -107,7 +105,7 @@ def predict(filename = None):
     sub.sort_values('Result', ascending = False, inplace = True)
     sub = sub.head(round(sub.shape[0]*percent))
     
-    sub.to_csv(r'C:/Users/813146/Documents/Full_data/Output/' + fileNameSample.name[:-4] + '_Output.csv')
+    sub.to_csv(r'C:/Users//Output/' + fileNameSample.name[:-4] + '_Output.csv')
     print(time.process_time() - start)
     return render_template('index1.html', prediction_text='Predicted Successfully !')
 
